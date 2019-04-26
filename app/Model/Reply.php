@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Model;
+use App\Model\Question;
 
 use Illuminate\Database\Eloquent\Model;
 
