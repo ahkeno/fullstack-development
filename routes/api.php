@@ -17,4 +17,5 @@ use Illuminate\Http\Request;
 //     return $request->user();});
 
 Route::apiResource('/question','QuestionController');
+Route::apiResource('/category','CategoryController');
 
