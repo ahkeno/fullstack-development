@@ -7,3 +7,5 @@ Creating Single Page Application by using
 #vue-router
 #JWT -JSON Web Token
 #Markdown Editor 
+
+To Run Develop Server :php artisan serve
