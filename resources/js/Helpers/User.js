@@ -7,7 +7,7 @@ class User{
                 this.respondAfterLogin(res);
               //Token.payload(res.data.access_token)  
             })
-            .catch(error    => console.log(error))
+            .catch(error=> console.log(error))
     }
     respondAfterLogin(res){
         const access_token = res.data.access_token;
@@ -27,10 +27,13 @@ class User{
 
     isLoggedIn(){
         return this.hasToken();
+        window.location = '/forum';
     }
 
     logout(){
-        AppStorage.logout();
+        debugger;
+        AppStorage.clear();
+        window.location = '/login';
     }
 
     name(){

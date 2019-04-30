@@ -4,11 +4,10 @@ class AppStorage {
         localStorage.setItem('app_token',token)
     }
     clear(user,token){
-        localStorage.removeItem(user);
-        localStorage.removeItem(token);
+        localStorage.removeItem('app_user');
+        localStorage.removeItem('app_token');
     }
     getToken(){
-        debugger;
         return localStorage.getItem('app_token');
     }
     getUser(){

@@ -30,7 +30,9 @@ import router from './routes/routes';
 
 import User from './Helpers/User';
 window.User = User;
-User.isLoggedIn();
+console.log(User.isLoggedIn());
+
+window.EventBus = new Vue();
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
