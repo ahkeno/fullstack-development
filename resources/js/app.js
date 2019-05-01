@@ -30,7 +30,10 @@ import router from './routes/routes';
 
 import User from './Helpers/User';
 window.User = User;
-console.log(User.isLoggedIn());
+
+import VueSimplemde from 'vue-simplemde';
+Vue.use(VueSimplemde);
+
 
 window.EventBus = new Vue();
 

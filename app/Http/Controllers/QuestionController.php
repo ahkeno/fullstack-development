@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Http\Controllers;
 use App\Model\Question;
 use Illuminate\Http\Request;
 use App\Http\Resources\QuestionResource;
@@ -21,7 +21,7 @@ class QuestionController extends Controller
 
     public function index()
     {
-        return QuestionResource::collection(Question::latest()->get());
+        return QuestionResource::collection(Question::all());
     }
 
     /**
@@ -42,8 +42,8 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        //auth()->user()->question()->create($request->all());
-        Question::create($request->all());
+        auth()->user()->question()->create($request->all());
+        $request['slug'] = str_slug('$request->title');
         return response("Created");
     }
 
