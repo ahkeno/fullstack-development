@@ -2032,9 +2032,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      editform: {},
       editing: false,
       question: null,
       replies: null,
@@ -2069,12 +2083,23 @@ __webpack_require__.r(__webpack_exports__);
         return console.error(error);
       });
     },
+    openEditQuestion: function openEditQuestion() {
+      this.editing = true;
+    },
     editQuestion: function editQuestion() {
-      axios.path("/api/question/".concat(this.question.slug)).then(function (res) {
-        console.log("success edit");
-      })["catch"](function (err) {
-        return console.error(error);
-      });
+      var _this3 = this;
+
+      if (this.editing) {
+        debugger;
+        axios.patch("/api/question/".concat(this.question.slug), this.question.body).then(function (res) {
+          _this3.cancel();
+
+          _this3.editing = false;
+        });
+      }
+    },
+    cancel: function cancel() {
+      EventBus.$emit('stopEditing');
     }
   }
 });
@@ -56479,9 +56504,64 @@ var render = function() {
                     _vm._v(" "),
                     _c("v-spacer"),
                     _vm._v(" "),
-                    _c("v-card-text", {
-                      domProps: { innerHTML: _vm._s(_vm.body) }
-                    }),
+                    !this.editing
+                      ? _c("v-card-text", {
+                          domProps: { innerHTML: _vm._s(_vm.body) }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    this.editing
+                      ? _c(
+                          "v-form",
+                          {
+                            on: {
+                              submit: function($event) {
+                                $event.preventDefault()
+                                return _vm.editQuestion($event)
+                              }
+                            }
+                          },
+                          [
+                            _c("markdown-editor", {
+                              model: {
+                                value: _vm.question.body,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.question, "body", $$v)
+                                },
+                                expression: "question.body"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "v-btn",
+                              {
+                                attrs: { icon: "", small: "" },
+                                on: { click: _vm.cancel }
+                              },
+                              [
+                                _c("v-icon", { attrs: { color: "blue" } }, [
+                                  _vm._v("cancel")
+                                ])
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "v-btn",
+                              {
+                                attrs: { icon: "", small: "", type: "submit" }
+                              },
+                              [
+                                _c("v-icon", { attrs: { color: "success" } }, [
+                                  _vm._v("save")
+                                ])
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        )
+                      : _vm._e(),
                     _vm._v(" "),
                     _c("v-btn", { attrs: { flat: "", color: "success" } }, [
                       _vm._v(
@@ -56492,37 +56572,47 @@ var render = function() {
                   1
                 ),
                 _vm._v(" "),
-                _vm.own
+                !this.editing
                   ? _c(
-                      "v-card-actions",
+                      "div",
                       [
-                        _c(
-                          "v-btn",
-                          {
-                            attrs: { icon: "", small: "" },
-                            on: { click: _vm.editQuestion }
-                          },
-                          [
-                            _c("v-icon", { attrs: { color: "orange" } }, [
-                              _vm._v("edit")
-                            ])
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "v-btn",
-                          {
-                            attrs: { icon: "", small: "" },
-                            on: { click: _vm.deleteQuestion }
-                          },
-                          [
-                            _c("v-icon", { attrs: { color: "red" } }, [
-                              _vm._v("delete")
-                            ])
-                          ],
-                          1
-                        )
+                        _vm.own
+                          ? _c(
+                              "v-card-actions",
+                              [
+                                _c(
+                                  "v-btn",
+                                  {
+                                    attrs: { icon: "", small: "" },
+                                    on: { click: _vm.openEditQuestion }
+                                  },
+                                  [
+                                    _c(
+                                      "v-icon",
+                                      { attrs: { color: "orange" } },
+                                      [_vm._v("edit")]
+                                    )
+                                  ],
+                                  1
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "v-btn",
+                                  {
+                                    attrs: { icon: "", small: "" },
+                                    on: { click: _vm.deleteQuestion }
+                                  },
+                                  [
+                                    _c("v-icon", { attrs: { color: "red" } }, [
+                                      _vm._v("delete")
+                                    ])
+                                  ],
+                                  1
+                                )
+                              ],
+                              1
+                            )
+                          : _vm._e()
                       ],
                       1
                     )

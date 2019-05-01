@@ -10,17 +10,30 @@
                     <span class="grey--text">{{question.user}} Said {{question.created_at}}</span>
                 </div>
                 <v-spacer></v-spacer>
-                <v-card-text v-html="body"></v-card-text>
+                <!-- show body of text  -->
+                <v-card-text v-html="body" v-if="!this.editing"></v-card-text>
+                <!-- edit -->
+                 <v-form  @submit.prevent="editQuestion" v-if="this.editing">
+                    <markdown-editor v-model="question.body"  ></markdown-editor>
+                    <v-btn icon small @click="cancel">
+                        <v-icon color="blue">cancel</v-icon>
+                    </v-btn>
+                    <v-btn icon small type="submit">
+                        <v-icon color="success">save</v-icon>
+                    </v-btn>
+                 </v-form>
                 <v-btn flat color="success">5 {{question.replies_count}} Replies</v-btn>
                 </v-card-title>   
+                <div v-if="!this.editing">
                 <v-card-actions v-if="own">
-                    <v-btn icon small @click="editQuestion">
+                    <v-btn icon small @click="openEditQuestion">
                         <v-icon color="orange">edit</v-icon>
                     </v-btn> 
                     <v-btn icon small  @click="deleteQuestion">
                         <v-icon color="red">delete</v-icon>
                     </v-btn>    
-                </v-card-actions>    
+                </v-card-actions>  
+                </div>  
             </v-card>
             
         </div>
@@ -33,7 +46,7 @@ export default {
 
  data(){
       return {
-          
+          editform: {},
           editing : false,
           question:null,
           replies:null,
@@ -64,13 +77,23 @@ export default {
           .then(res => this.$router.push("/forum"))
           .catch(err => console.error(error))
       },
+      openEditQuestion(){
+          this.editing = true;
+          
+      },
       editQuestion(){
-          axios.path(`/api/question/${this.question.slug}`)
-          .then(res => {
-              console.log("success edit")
-          })
-          .catch(err => console.error(error))
-      }
+          if(this.editing){
+              debugger;
+              axios.patch(`/api/question/${this.question.slug}`,this.question.body)
+                .then(res => {
+                    this.cancel()
+                    this.editing = false
+                    })
+          }
+      },
+      cancel(){
+          EventBus.$emit('stopEditing');
+      },
   }
 
 }
