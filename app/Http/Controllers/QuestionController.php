@@ -42,9 +42,9 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        auth()->user()->question()->create($request->all());
-        $request['slug'] = str_slug('$request->title');
-        return response("Created");
+        $question = auth()->user()->question()->create($request->all());
+        //$request['slug'] = str_slug('$request->title');
+        return response(new QuestionResource($question));
     }
 
     /**

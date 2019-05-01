@@ -12,7 +12,9 @@ window.Vue = require('vue');
 import Vue from 'vue';
 import Vuetify from 'vuetify'
 
-Vue.use(Vuetify)
+Vue.use(Vuetify,{
+    iconfont: 'mdi'
+})
 
 /**
  * The following block of code may be used to automatically register your
@@ -33,6 +35,9 @@ window.User = User;
 
 import VueSimplemde from 'vue-simplemde';
 Vue.use(VueSimplemde);
+
+import md from "marked";
+window.md = md;
 
 
 window.EventBus = new Vue();

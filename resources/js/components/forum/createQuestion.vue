@@ -51,10 +51,11 @@ export default {
     },
     methods:{
         submit(){
-            console.log(this.form);
-            debugger;
             axios.post('api/question',this.form)
-            .then(res=> console.log("question created:"))
+            .then(res=> {
+                debugger;
+                this.$router.push(res.data.path)
+            })
             .catch(error => {
                 this.error = error.response.data;
                 //Exception.handle(this.error);

@@ -9,6 +9,13 @@ use App\Model\Category;
 
 class Question extends Model
 {   
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function($question){
+            $question->slug = str_slug($question->title);
+        });
+    }
     public function getRouteKeyName(){
         return 'slug';
     }

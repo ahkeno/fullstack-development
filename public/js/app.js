@@ -1847,10 +1847,10 @@ __webpack_require__.r(__webpack_exports__);
     submit: function submit() {
       var _this = this;
 
-      console.log(this.form);
-      debugger;
       axios.post('api/question', this.form).then(function (res) {
-        return console.log("question created:");
+        debugger;
+
+        _this.$router.push(res.data.path);
       })["catch"](function (error) {
         _this.error = error.response.data; //Exception.handle(this.error);
 
@@ -2022,24 +2022,60 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       editing: false,
       question: null,
-      replies: null
+      replies: null,
+      own: false
     };
   },
   created: function created() {
     var _this = this;
 
-    console.log("Come to single Created");
+    console.log("Come to single Created"); //this.own = User.own(this.question.userId);
+
     debugger;
     axios.get("/api/question/".concat(this.$route.params.slug)).then(function (res) {
       _this.question = res.data.data;
+      _this.own = User.own(_this.question.userId);
       _this.replies = res.data.replies;
       _this.replyCount = res.data.replyCount;
     });
+  },
+  computed: {
+    body: function body() {
+      return md.parse(this.question.body);
+    }
+  },
+  methods: {
+    deleteQuestion: function deleteQuestion() {
+      var _this2 = this;
+
+      axios["delete"]("/api/question/".concat(this.question.slug)).then(function (res) {
+        return _this2.$router.push("/forum");
+      })["catch"](function (err) {
+        return console.error(error);
+      });
+    },
+    editQuestion: function editQuestion() {
+      axios.path("/api/question/".concat(this.question.slug)).then(function (res) {
+        console.log("success edit");
+      })["catch"](function (err) {
+        return console.error(error);
+      });
+    }
   }
 });
 
@@ -56443,12 +56479,54 @@ var render = function() {
                     _vm._v(" "),
                     _c("v-spacer"),
                     _vm._v(" "),
+                    _c("v-card-text", {
+                      domProps: { innerHTML: _vm._s(_vm.body) }
+                    }),
+                    _vm._v(" "),
                     _c("v-btn", { attrs: { flat: "", color: "success" } }, [
-                      _vm._v(_vm._s(_vm.question.replies_count) + " Replies")
+                      _vm._v(
+                        "5 " + _vm._s(_vm.question.replies_count) + " Replies"
+                      )
                     ])
                   ],
                   1
-                )
+                ),
+                _vm._v(" "),
+                _vm.own
+                  ? _c(
+                      "v-card-actions",
+                      [
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { icon: "", small: "" },
+                            on: { click: _vm.editQuestion }
+                          },
+                          [
+                            _c("v-icon", { attrs: { color: "orange" } }, [
+                              _vm._v("edit")
+                            ])
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { icon: "", small: "" },
+                            on: { click: _vm.deleteQuestion }
+                          },
+                          [
+                            _c("v-icon", { attrs: { color: "red" } }, [
+                              _vm._v("delete")
+                            ])
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  : _vm._e()
               ],
               1
             )
@@ -97741,6 +97819,12 @@ function () {
         return payload.sub;
       }
     }
+  }, {
+    key: "own",
+    value: function own(id) {
+      debugger;
+      return this.id() == id;
+    }
   }]);
 
   return User;
@@ -97767,6 +97851,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Helpers_User__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Helpers/User */ "./resources/js/Helpers/User.js");
 /* harmony import */ var vue_simplemde__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue-simplemde */ "./node_modules/vue-simplemde/dist/vue-simplemde.min.js");
 /* harmony import */ var vue_simplemde__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(vue_simplemde__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var marked__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! marked */ "./node_modules/marked/lib/marked.js");
+/* harmony import */ var marked__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(marked__WEBPACK_IMPORTED_MODULE_5__);
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -97777,7 +97863,9 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
 
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuetify__WEBPACK_IMPORTED_MODULE_1___default.a);
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuetify__WEBPACK_IMPORTED_MODULE_1___default.a, {
+  iconfont: 'mdi'
+});
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -97794,6 +97882,8 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('AppHome', __webpack_requir
 window.User = _Helpers_User__WEBPACK_IMPORTED_MODULE_3__["default"];
 
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_simplemde__WEBPACK_IMPORTED_MODULE_4___default.a);
+
+window.md = marked__WEBPACK_IMPORTED_MODULE_5___default.a;
 window.EventBus = new vue__WEBPACK_IMPORTED_MODULE_0___default.a();
 /**
  * Next, we will create a fresh Vue application instance and attach it to
