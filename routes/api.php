@@ -6,13 +6,8 @@ Route::apiResource('/question/{question}/reply','replyController');
 Route::post('/like/{reply}','LikeController@likeIt');
 Route::delete('/like/{reply}','LikeController@unLikeIt');
  
-Route::post('/notification','NewReplyNotification@index');
-// Route::post('notification', function () {
-//     return [
-//         'read' => auth()->user()->readNotifications(),
-//         'unread' => auth()->user()->unreadNotifications()
-//     ];
-// });
+Route::post('/notification','NotificationController@index');
+Route::post('/markAsRead','NotificationController@markAsRead');
 
 Route::group([
 

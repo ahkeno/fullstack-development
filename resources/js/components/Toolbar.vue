@@ -2,7 +2,7 @@
   <v-toolbar color="indigo lighten-1" class="white--text">
     <v-toolbar-title>Ahkeno's Question Forum</v-toolbar-title>
     <v-spacer></v-spacer>
-    <notification></notification>
+    <notification  ></notification>
     <v-toolbar-side-icon class="hidden-md-and-up"></v-toolbar-side-icon>
    <div class="hidden-sm-and-down">
       <span v-for="item in items " :key="item.title">

@@ -2348,14 +2348,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'notification',
   data: function data() {
     return {
-      reads: {},
-      unreads: {}
+      read: {},
+      unread: {},
+      unreadCount: 0
     };
   },
   created: function created() {
@@ -2363,15 +2362,31 @@ __webpack_require__.r(__webpack_exports__);
       this.getNotifications();
     }
   },
+  computed: {},
   methods: {
     getNotifications: function getNotifications() {
       var _this = this;
 
       axios.post('/api/notification').then(function (res) {
-        _this.reads = res.data.read;
-        _this.unreads = res.data.unread;
+        _this.read = res.data.read;
+        _this.unread = res.data.unread;
+        _this.unreadCount = res.data.unread.length;
       })["catch"](function (err) {
         return console.log("error");
+      });
+    },
+    readIt: function readIt(notification) {
+      var _this2 = this;
+
+      debugger;
+      axios.post("/api/markAsRead", {
+        id: notification.id
+      }).then(function (res) {
+        _this2.unread.splice(notification, 1);
+
+        _this2.read.push(notification);
+
+        _this2.unreadCount--;
       });
     }
   }
@@ -57174,7 +57189,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm.reads.length || _vm.unreads.length
+  return _vm.read.length || _vm.unread.length
     ? _c(
         "v-menu",
         { attrs: { "offset-y": "" } },
@@ -57188,7 +57203,7 @@ var render = function() {
             },
             [
               _c("v-icon", { attrs: { color: "red" } }, [_vm._v("add_alert")]),
-              _vm._v(_vm._s(_vm.unreads.length) + "\n    ")
+              _vm._v(_vm._s(_vm.unread.length) + "\n    ")
             ],
             1
           ),
@@ -57196,56 +57211,39 @@ var render = function() {
           _c(
             "v-list",
             [
-              _vm._l(_vm.unreads, function(unread) {
+              _vm._l(_vm.unread, function(item) {
                 return _c(
                   "v-list-tile",
-                  {
-                    key: unread.id,
-                    on: {
-                      click: function($event) {
-                        return _vm.read(unread)
-                      }
-                    }
-                  },
+                  { key: item.id },
                   [
-                    _c("v-list-tile-title", [
-                      _vm._v(
-                        "\n            " +
-                          _vm._s(unread.repliedBy) +
-                          " has replied on " +
-                          _vm._s(unread.question) +
-                          "\n        "
-                      )
-                    ])
+                    _c(
+                      "router-link",
+                      { attrs: { to: item.path } },
+                      [
+                        _c(
+                          "v-list-tile-title",
+                          {
+                            on: {
+                              click: function($event) {
+                                return _vm.readIt(item)
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(item.question))]
+                        )
+                      ],
+                      1
+                    )
                   ],
                   1
                 )
               }),
               _vm._v(" "),
-              _c("v-divider"),
-              _vm._v(" "),
-              _vm._l(_vm.reads, function(read) {
+              _vm._l(_vm.read, function(item) {
                 return _c(
                   "v-list-tile",
-                  {
-                    key: read.id,
-                    on: {
-                      click: function($event) {
-                        return read(read)
-                      }
-                    }
-                  },
-                  [
-                    _c("v-list-tile-title", [
-                      _vm._v(
-                        "\n            " +
-                          _vm._s(read.repliedBy) +
-                          " has replied on " +
-                          _vm._s(read.question) +
-                          "\n        "
-                      )
-                    ])
-                  ],
+                  { key: item.id },
+                  [_c("v-list-tile-title", [_vm._v(_vm._s(item.question))])],
                   1
                 )
               })
