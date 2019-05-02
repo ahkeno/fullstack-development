@@ -1,7 +1,7 @@
 <template>
     <div class="mt-2 ml-4 mr-4">
         <div v-if="!showEdit" >
-            <v-card-actions v-if="own">
+            <v-card-actions v-if="owns">
                 <v-spacer></v-spacer>
                 <div>
                 <v-btn icon @click="editing">
@@ -14,10 +14,9 @@
             </v-card-actions>
         </div>
         <v-card-title primary-title>
-            <div class="headline">{{reply.id}}</div>
             <div class="headline">{{reply.user.name}}</div>
             <div class="ml-4">Said {{reply.created_at}}</div>
-            <v-card-text v-if="!showEdit" v-html="reply.body"></v-card-text>
+            <v-card-text v-if="!showEdit" v-html="body"></v-card-text>
             <v-spacer></v-spacer>
             <!-- <favorite class="ml-4" :content="reply"></favorite> -->
         </v-card-title>
@@ -39,19 +38,26 @@
 <script>
 export default {
     name: "Replies",
-    props:['content','own'],
+    props:['content'],
     data(){
         return{
             showEdit: false,
             form:{},
-            reply : {}
+            reply : {},
         }
     },
     computed:{
-       
+       body(){
+           return md.parse(this.reply.body)
+       },
+       owns(){
+           debugger;
+           return User.own(this.reply.user.id )
+        }
     },
     created(){
         this.reply = this.content;
+        
     },
     methods:{
         editing(){
@@ -59,7 +65,7 @@ export default {
         },
         destroy(){
             debugger;
-            EventBus.$emit('deleteReply',{id:this.reply.id,index:this.reply.index})
+            EventBus.$emit('deleteReply',{id:this.reply.id,index:this.$attrs})
         },
         editReply(id,data){
             if(this.showEdit){

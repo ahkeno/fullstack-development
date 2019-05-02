@@ -91,7 +91,8 @@ class ReplyController extends Controller
      */
     public function destroy(Question $question,Reply $reply)
     {
-        $question->replies()->delete();
-        return response(Reply::latest()->get(),201);
+        $reply->delete();
+       
+        return response("deleted",201);
     }
 }

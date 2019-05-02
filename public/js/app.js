@@ -2101,22 +2101,18 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     var _this = this;
 
-    axios.get("/api/question/".concat(this.$route.params.slug)).then(function (res) {
-      _this.question = res.data.data;
-      _this.own = User.own(_this.question.userId);
-      _this.replies = res.data.data.replies;
-      _this.replyCount = res.data.replyCount;
-    });
+    this.getAllReply();
     EventBus.$on('deleteReply', function (value) {
-      debugger;
       axios["delete"]("/api".concat(_this.$route.path, "/reply/").concat(value.id)).then(function (res) {
-        return _this.replies = res.data;
+        return _this.getAllReply();
       })["catch"](function (err) {
         return console.error(error);
       });
     });
     EventBus.$on('gotReply', function () {
-      _this.question.replies_count++;
+      _this.question.reply_count++;
+
+      _this.getAllReply();
     });
   },
   computed: {
@@ -2125,11 +2121,22 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    deleteQuestion: function deleteQuestion() {
+    getAllReply: function getAllReply() {
       var _this2 = this;
 
+      axios.get("/api/question/".concat(this.$route.params.slug)).then(function (res) {
+        debugger;
+        _this2.question = res.data.data;
+        _this2.own = User.own(_this2.question.userId);
+        _this2.replies = res.data.data.replies;
+        _this2.replyCount = res.data.replyCount;
+      });
+    },
+    deleteQuestion: function deleteQuestion() {
+      var _this3 = this;
+
       axios["delete"]("/api/question/".concat(this.question.slug)).then(function (res) {
-        return _this2.$router.push("/forum");
+        return _this3.$router.push("/forum");
       })["catch"](function (err) {
         return console.error(error);
       });
@@ -2138,14 +2145,14 @@ __webpack_require__.r(__webpack_exports__);
       this.editing = true;
     },
     editQuestion: function editQuestion() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (this.editing) {
         debugger;
         axios.patch("/api/question/".concat(this.question.slug), this.question.body).then(function (res) {
-          _this3.cancel();
+          _this4.cancel();
 
-          _this3.editing = false;
+          _this4.editing = false;
         });
       }
     },
@@ -2403,10 +2410,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Replies",
-  props: ['content', 'own'],
+  props: ['content'],
   data: function data() {
     return {
       showEdit: false,
@@ -2414,7 +2420,15 @@ __webpack_require__.r(__webpack_exports__);
       reply: {}
     };
   },
-  computed: {},
+  computed: {
+    body: function body() {
+      return md.parse(this.reply.body);
+    },
+    owns: function owns() {
+      debugger;
+      return User.own(this.reply.user.id);
+    }
+  },
   created: function created() {
     this.reply = this.content;
   },
@@ -2426,7 +2440,7 @@ __webpack_require__.r(__webpack_exports__);
       debugger;
       EventBus.$emit('deleteReply', {
         id: this.reply.id,
-        index: this.reply.index
+        index: this.$attrs
       });
     },
     editReply: function editReply(id, data) {
@@ -56849,7 +56863,7 @@ var render = function() {
                     [
                       _vm.replies
                         ? _c("Replies", {
-                            attrs: { content: reply, own: _vm.own }
+                            attrs: { content: reply, index: index }
                           })
                         : _vm._e()
                     ],
@@ -57157,7 +57171,7 @@ var render = function() {
         ? _c(
             "div",
             [
-              _vm.own
+              _vm.owns
                 ? _c(
                     "v-card-actions",
                     [
@@ -57204,10 +57218,6 @@ var render = function() {
         { attrs: { "primary-title": "" } },
         [
           _c("div", { staticClass: "headline" }, [
-            _vm._v(_vm._s(_vm.reply.id))
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "headline" }, [
             _vm._v(_vm._s(_vm.reply.user.name))
           ]),
           _vm._v(" "),
@@ -57216,9 +57226,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           !_vm.showEdit
-            ? _c("v-card-text", {
-                domProps: { innerHTML: _vm._s(_vm.reply.body) }
-              })
+            ? _c("v-card-text", { domProps: { innerHTML: _vm._s(_vm.body) } })
             : _vm._e(),
           _vm._v(" "),
           _c("v-spacer")

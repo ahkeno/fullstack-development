@@ -38,7 +38,7 @@
                 <Create-Reply :question="question.slug"></Create-Reply>
                 <!-- show reply -->
                 <v-card v-for="(reply,index) in replies" :key="reply.id" :index="index">
-                    <Replies v-if="replies" :content="reply" :own="own"></Replies>
+                    <Replies v-if="replies" :content="reply" :index="index"></Replies>
                 </v-card>
             </v-card>
             
@@ -62,22 +62,16 @@ export default {
   },
   created(){
     
-        axios.get(`/api/question/${this.$route.params.slug}`)
-          .then(res => {
-              this.question = res.data.data
-              this.own = User.own(this.question.userId)
-              this.replies = res.data.data.replies
-              this.replyCount = res.data.replyCount
-            })
+        this.getAllReply();
         EventBus.$on('deleteReply',(value)=>{
-            debugger;
           axios.delete(`/api${this.$route.path}/reply/${value.id}`)
-            .then(res => this.replies = res.data)
+            .then(res => this.getAllReply())
             .catch(err => console.error(error))
       })
 
       EventBus.$on('gotReply',()=>{
-        this.question.replies_count++
+        this.question.reply_count++
+        this.getAllReply();
       })
   },
   computed:{
@@ -88,6 +82,16 @@ export default {
       
   },
   methods:{
+      getAllReply(){
+          axios.get(`/api/question/${this.$route.params.slug}`)
+          .then(res => {
+              debugger;
+              this.question = res.data.data
+              this.own = User.own(this.question.userId)
+              this.replies = res.data.data.replies
+              this.replyCount = res.data.replyCount
+            })
+      },
       deleteQuestion(){
           axios.delete(`/api/question/${this.question.slug}`)
           .then(res => this.$router.push("/forum"))
