@@ -20,7 +20,8 @@ class ReplyController extends Controller
     }
     public function index(Question $question)
     {
-        return  ReplyResource::collection($question->replies);
+        return ReplyResource::collection($question->replies);
+        //return ReplyResource::collection(Question::all());
         //return Reply::latest()->get();
     }
 
@@ -91,6 +92,6 @@ class ReplyController extends Controller
     public function destroy(Question $question,Reply $reply)
     {
         $question->replies()->delete();
-        return response('Reply Deleted',201);
+        return response(Reply::latest()->get(),201);
     }
 }

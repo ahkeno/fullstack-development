@@ -18,6 +18,8 @@ class QuestionResource extends JsonResource
             'title' => $this->title,
             'path' => ("/question/$this->slug"),
             'slug' => ("$this->slug"),
+            'replies'=>$this->replies,
+            'reply_count'=>$this->replies->count(),
             'user'  => $this->user['name'],
             'userId'  => $this->user['id'],
             'created_at'  => $this->created_at->diffForHumans(),

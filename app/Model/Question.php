@@ -9,6 +9,10 @@ use App\Model\Category;
 
 class Question extends Model
 {   
+    protected $guarded = []; //to avoid delcare many fileds 
+
+    protected $with = ['replies'];
+
     protected static function boot()
     {
         parent::boot();
@@ -20,9 +24,6 @@ class Question extends Model
         return 'slug';
     }
     // protected $fillable = ['title','slug','body','category_id','user_id'];
-
-    protected $guarded = []; //to avoid delcare many fileds 
-    
     public function user(){
         return $this->belongsTo(User::class);
     }
@@ -31,6 +32,7 @@ class Question extends Model
        return $this->hasMany(Reply::class);
     }
     public function category(){
+
         return $this->belongsTo(Category::class);
     }
     public function getPathAttrubute()

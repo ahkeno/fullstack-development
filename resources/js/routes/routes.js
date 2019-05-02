@@ -9,6 +9,7 @@ import Signup from '../components/login/Signup';
 import ShowForum from '../components/forum/showForum';
 import SingleQuestion from '../components/forum/singlequestion';
 import CreateQuestion from '../components/forum/createQuestion';
+import CreateCategory from '../components/category/createcategory';
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     component : CreateQuestion,
     name: 'ask'
   },
+  {
+    path: '/create-category',
+    component : CreateCategory,
+    
+  }
   
 ]
 const router = new VueRouter({

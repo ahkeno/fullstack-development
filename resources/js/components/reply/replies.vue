@@ -1,0 +1,83 @@
+<template>
+    <div class="mt-2 ml-4 mr-4">
+        <div v-if="!showEdit" >
+            <v-card-actions v-if="own">
+                <v-spacer></v-spacer>
+                <div>
+                <v-btn icon @click="editing">
+                    <v-icon color="orange">edit</v-icon>
+                </v-btn>
+                <v-btn icon @click="destroy">
+                    <v-icon color="red">delete</v-icon>
+                </v-btn>
+                </div>
+            </v-card-actions>
+        </div>
+        <v-card-title primary-title>
+            <div class="headline">{{reply.id}}</div>
+            <div class="headline">{{reply.user.name}}</div>
+            <div class="ml-4">Said {{reply.created_at}}</div>
+            <v-card-text v-if="!showEdit" v-html="reply.body"></v-card-text>
+            <v-spacer></v-spacer>
+            <!-- <favorite class="ml-4" :content="reply"></favorite> -->
+        </v-card-title>
+        
+        <!-- Edit Reply Body -->
+        <v-form  @submit.prevent="editReply()" v-if="showEdit">
+            <markdown-editor v-model="reply.body"  ></markdown-editor>
+            <v-btn icon small @click="cancel">
+                <v-icon color="blue">cancel</v-icon>
+            </v-btn>
+            <v-btn icon small type="submit">
+                <v-icon color="success">save</v-icon>
+            </v-btn>
+        </v-form>
+        
+        
+    </div>
+</template>
+<script>
+export default {
+    name: "Replies",
+    props:['content','own'],
+    data(){
+        return{
+            showEdit: false,
+            form:{},
+            reply : {}
+        }
+    },
+    computed:{
+       
+    },
+    created(){
+        this.reply = this.content;
+    },
+    methods:{
+        editing(){
+            this.showEdit = true;
+        },
+        destroy(){
+            debugger;
+            EventBus.$emit('deleteReply',{id:this.reply.id,index:this.reply.index})
+        },
+        editReply(id,data){
+            if(this.showEdit){
+            axios.put(`/api${this.$route.path}/reply/${this.reply.id}`,{'body':this.reply.body})
+                .then(res => {
+                    this.showEdit = false
+                    })
+            }
+        },
+        cancel(){
+            //EventBus.$emit('cancel');
+            alert("I on cancle");
+            this.showEdit = false
+        },
+        listener(){
+        
+      }
+    }
+}
+</script>
+

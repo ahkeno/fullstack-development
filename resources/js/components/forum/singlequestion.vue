@@ -22,7 +22,7 @@
                         <v-icon color="success">save</v-icon>
                     </v-btn>
                  </v-form>
-                <v-btn flat color="success">5 {{question.replies_count}} Replies</v-btn>
+                <v-btn flat color="success">{{question.reply_count}} Replies</v-btn>
                 </v-card-title>   
                 <div v-if="!this.editing">
                 <v-card-actions v-if="own">
@@ -33,7 +33,13 @@
                         <v-icon color="red">delete</v-icon>
                     </v-btn>    
                 </v-card-actions>  
-                </div>  
+                </div> 
+                <!-- create reply -->
+                <Create-Reply :question="question.slug"></Create-Reply>
+                <!-- show reply -->
+                <v-card v-for="(reply,index) in replies" :key="reply.id" :index="index">
+                    <Replies v-if="replies" :content="reply" :own="own"></Replies>
+                </v-card>
             </v-card>
             
         </div>
@@ -41,7 +47,8 @@
     </div>
 </template>
 <script>
-
+import Replies from './../reply/replies';
+import CreateReply from './../reply/createReply';
 export default {
 
  data(){
@@ -54,22 +61,31 @@ export default {
       }
   },
   created(){
-    console.log("Come to single Created");
-    //this.own = User.own(this.question.userId);
-    debugger;
-          axios.get(`/api/question/${this.$route.params.slug}`)
+    
+        axios.get(`/api/question/${this.$route.params.slug}`)
           .then(res => {
               this.question = res.data.data
               this.own = User.own(this.question.userId)
-              this.replies = res.data.replies
+              this.replies = res.data.data.replies
               this.replyCount = res.data.replyCount
             })
+        EventBus.$on('deleteReply',(value)=>{
+            debugger;
+          axios.delete(`/api${this.$route.path}/reply/${value.id}`)
+            .then(res => this.replies = res.data)
+            .catch(err => console.error(error))
+      })
+
+      EventBus.$on('gotReply',()=>{
+        this.question.replies_count++
+      })
   },
   computed:{
       body(){
           
           return md.parse(this.question.body);
-      }
+      },
+      
   },
   methods:{
       deleteQuestion(){
@@ -94,7 +110,9 @@ export default {
       cancel(){
           EventBus.$emit('stopEditing');
       },
-  }
+      
+  },
+  components: {Replies,CreateReply},
 
 }
 </script>
