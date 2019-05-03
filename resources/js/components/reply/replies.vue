@@ -3,22 +3,24 @@
         <div v-if="!showEdit" >
             <v-card-actions v-if="owns">
                 <v-spacer></v-spacer>
-                <div>
+                
                 <v-btn icon @click="editing">
                     <v-icon color="orange">edit</v-icon>
                 </v-btn>
                 <v-btn icon @click="destroy">
                     <v-icon color="red">delete</v-icon>
                 </v-btn>
-                </div>
+                
             </v-card-actions>
         </div>
         <v-card-title primary-title>
             <div class="headline">{{reply.user.name}}</div>
             <div class="ml-4">Said {{reply.created_at}}</div>
             <v-card-text v-if="!showEdit" v-html="body"></v-card-text>
-            <v-spacer></v-spacer>
-            <!-- <favorite class="ml-4" :content="reply"></favorite> -->
+            <like  :liked = "likedContent.liked" :count="likedContent.like_count"></like>
+           <!-- <v-btn icon @click="likeIt">
+                <v-icon :color="likeColor">favorite</v-icon> {{likedContent.like_count}}
+            </v-btn> -->
         </v-card-title>
         
         <!-- Edit Reply Body -->
@@ -31,11 +33,10 @@
                 <v-icon color="success">save</v-icon>
             </v-btn>
         </v-form>
-        
-        
     </div>
 </template>
 <script>
+import Like from "./../likes/like";
 export default {
     name: "Replies",
     props:['content'],
@@ -44,19 +45,26 @@ export default {
             showEdit: false,
             form:{},
             reply : {},
+            likedContent:{}
         }
     },
+    components:{Like},
     computed:{
+       
        body(){
            return md.parse(this.reply.body)
        },
        owns(){
-           debugger;
+           
            return User.own(this.reply.user.id )
+        },
+        likeColor(){
+            return this.likedContent.liked ? 'red': 'red lighten-4';
         }
     },
     created(){
         this.reply = this.content;
+        this.getLike();
         
     },
     methods:{
@@ -64,7 +72,7 @@ export default {
             this.showEdit = true;
         },
         destroy(){
-            debugger;
+            
             EventBus.$emit('deleteReply',{id:this.reply.id,index:this.$attrs})
         },
         editReply(id,data){
@@ -82,8 +90,18 @@ export default {
         },
         listener(){
         
-      }
-    }
+        },
+        getLike(){
+            
+            axios.get(`/api/question/${this.$route.params.slug}/reply/${this.reply.id}`)
+          .then(res => {
+              
+                this.likedContent = res.data.data;
+            
+          })
+        }
+    },
+    
 }
 </script>
 

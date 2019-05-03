@@ -21,9 +21,9 @@ class ReplyController extends Controller
     }
     public function index(Question $question)
     {
-        return ReplyResource::collection($question->replies);
+       // return ReplyResource::collection($question->replies);
         //return ReplyResource::collection(Question::all());
-        //return Reply::latest()->get();
+        return Reply::latest()->get();
     }
 
     /**

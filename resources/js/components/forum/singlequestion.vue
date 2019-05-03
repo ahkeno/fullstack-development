@@ -85,7 +85,7 @@ export default {
       getAllReply(){
           axios.get(`/api/question/${this.$route.params.slug}`)
           .then(res => {
-              debugger;
+              
               this.question = res.data.data
               this.own = User.own(this.question.userId)
               this.replies = res.data.data.replies
@@ -103,7 +103,7 @@ export default {
       },
       editQuestion(){
           if(this.editing){
-              debugger;
+              
               axios.patch(`/api/question/${this.question.slug}`,this.question.body)
                 .then(res => {
                     this.cancel()
