@@ -21,7 +21,7 @@ class LikeController extends Controller
 
     }
     public function unLikeIt(Reply $reply){
-        $reply->like()->where(['user_id', auth()->id()])->first()->delete();//one user can only like one reply, so delete the first like if they have
+        $reply->like()->where('user_id', auth()->id())->first()->delete();//one user can only like one reply, so delete the first like if they have
         //$reply->like()->where('user_id', "1")->first()->delete();
     }
 }

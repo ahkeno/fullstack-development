@@ -17,7 +17,9 @@
             <div class="headline">{{reply.user.name}}</div>
             <div class="ml-4">Said {{reply.created_at}}</div>
             <v-card-text v-if="!showEdit" v-html="body"></v-card-text>
-            <like  :liked = "likedContent.liked" :count="likedContent.like_count"></like>
+            <div v-if="likedContent.length != 0">
+            <like  :isliked = "likedContent.liked" :count="likedContent.like_count" :id="reply.id" ></like>
+            </div>
            <!-- <v-btn icon @click="likeIt">
                 <v-icon :color="likeColor">favorite</v-icon> {{likedContent.like_count}}
             </v-btn> -->
@@ -59,6 +61,7 @@ export default {
            return User.own(this.reply.user.id )
         },
         likeColor(){
+            debugger;
             return this.likedContent.liked ? 'red': 'red lighten-4';
         }
     },

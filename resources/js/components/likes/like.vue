@@ -1,36 +1,51 @@
 <template>
     <v-btn icon @click="likeIt">
-        <v-icon :color="color">favorite</v-icon> {{count}}
+        <v-icon :color="ownColor">favorite</v-icon> {{count}}
     </v-btn>
 </template>
 <script>
 export default {
-    props:['liked','count'],
+    props:['isliked','count','id'],
     name: "favourite",
     data(){
         return {
-            count: 0,
-            liked: Boolean
+           likeCount : 0,
+           like : false
         }
     },
     methods:{
         likeIt(){
-
+            
+            if(User.isLoggedIn()){
+                this.like ? this.decr() : this.incr()
+	            this.like = !this.like
+            }
+        },
+        decr(){
+            axios.delete(`/api/like/${this.id}`)
+	            .then(res => {
+                    
+                    this.count --
+                    this.isliked = false
+                } )
+        },
+        incr(){
+            axios.post(`/api/like/${this.id}`)
+	            .then(res => {
+                     
+                    this.count ++
+                    this.isliked = true})
         }
+        
     },
     computed:{
-        color(){
-            return this.liked ? 'red': 'red lighten-4';
-        },
-        getLike(){
-
+        ownColor(){
+            return this.isliked ? 'red': 'red lighten-4';
         }
     },
     created(){
-        debugger;
-        
-        this.liked = this.content.liked;
-        this.count = this.content.count;
+        this.like = this.isliked;
+        this.likeCount = this.count;
         
     }
 }

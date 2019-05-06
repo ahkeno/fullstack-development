@@ -2181,27 +2181,46 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['liked', 'count'],
+  props: ['isliked', 'count', 'id'],
   name: "favourite",
   data: function data() {
     return {
-      count: 0,
-      liked: Boolean
+      likeCount: 0,
+      like: false
     };
   },
   methods: {
-    likeIt: function likeIt() {}
+    likeIt: function likeIt() {
+      if (User.isLoggedIn()) {
+        this.like ? this.decr() : this.incr();
+        this.like = !this.like;
+      }
+    },
+    decr: function decr() {
+      var _this = this;
+
+      axios["delete"]("/api/like/".concat(this.id)).then(function (res) {
+        _this.count--;
+        _this.isliked = false;
+      });
+    },
+    incr: function incr() {
+      var _this2 = this;
+
+      axios.post("/api/like/".concat(this.id)).then(function (res) {
+        _this2.count++;
+        _this2.isliked = true;
+      });
+    }
   },
   computed: {
-    color: function color() {
-      return this.liked ? 'red' : 'red lighten-4';
-    },
-    getLike: function getLike() {}
+    ownColor: function ownColor() {
+      return this.isliked ? 'red' : 'red lighten-4';
+    }
   },
   created: function created() {
-    debugger;
-    this.liked = this.content.liked;
-    this.count = this.content.count;
+    this.like = this.isliked;
+    this.likeCount = this.count;
   }
 });
 
@@ -2524,6 +2543,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Replies",
@@ -2547,6 +2568,7 @@ __webpack_require__.r(__webpack_exports__);
       return User.own(this.reply.user.id);
     },
     likeColor: function likeColor() {
+      debugger;
       return this.likedContent.liked ? 'red' : 'red lighten-4';
     }
   },
@@ -67187,7 +67209,7 @@ var render = function() {
     "v-btn",
     { attrs: { icon: "" }, on: { click: _vm.likeIt } },
     [
-      _c("v-icon", { attrs: { color: _vm.color } }, [_vm._v("favorite")]),
+      _c("v-icon", { attrs: { color: _vm.ownColor } }, [_vm._v("favorite")]),
       _vm._v(" " + _vm._s(_vm.count) + "\n")
     ],
     1
@@ -67625,12 +67647,21 @@ var render = function() {
             ? _c("v-card-text", { domProps: { innerHTML: _vm._s(_vm.body) } })
             : _vm._e(),
           _vm._v(" "),
-          _c("like", {
-            attrs: {
-              liked: _vm.likedContent.liked,
-              count: _vm.likedContent.like_count
-            }
-          })
+          _vm.likedContent.length != 0
+            ? _c(
+                "div",
+                [
+                  _c("like", {
+                    attrs: {
+                      isliked: _vm.likedContent.liked,
+                      count: _vm.likedContent.like_count,
+                      id: _vm.reply.id
+                    }
+                  })
+                ],
+                1
+              )
+            : _vm._e()
         ],
         1
       ),
