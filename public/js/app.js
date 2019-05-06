@@ -2192,8 +2192,8 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     likeIt: function likeIt() {
       if (User.isLoggedIn()) {
-        this.like ? this.decr() : this.incr();
-        this.like = !this.like;
+        this.isliked ? this.decr() : this.incr();
+        this.isliked = !this.isliked;
       }
     },
     decr: function decr() {
@@ -2201,7 +2201,6 @@ __webpack_require__.r(__webpack_exports__);
 
       axios["delete"]("/api/like/".concat(this.id)).then(function (res) {
         _this.count--;
-        _this.isliked = false;
       });
     },
     incr: function incr() {
@@ -2209,7 +2208,6 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.post("/api/like/".concat(this.id)).then(function (res) {
         _this2.count++;
-        _this2.isliked = true;
       });
     }
   },
@@ -2219,8 +2217,15 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
+    var _this3 = this;
+
     this.like = this.isliked;
     this.likeCount = this.count;
+    Echo.channel('likeChannel').listen('LikeEvent', function (e) {
+      if (_this3.id == e.id) {
+        e.type == 1 ? _this3.count++ : _this3.count--;
+      }
+    });
   }
 });
 
@@ -2679,6 +2684,11 @@ __webpack_require__.r(__webpack_exports__);
     EventBus.$on('logout', function () {
       User.logout();
     });
+  },
+  computed: {
+    userName: function userName() {
+      return User.name();
+    }
   }
 });
 
@@ -67741,7 +67751,7 @@ var render = function() {
     "v-toolbar",
     { staticClass: "white--text", attrs: { color: "indigo lighten-1" } },
     [
-      _c("v-toolbar-title", [_vm._v("Ahkeno's Question Forum")]),
+      _c("v-toolbar-title", [_vm._v("Hello " + _vm._s(_vm.userName))]),
       _vm._v(" "),
       _c("v-spacer"),
       _vm._v(" "),
@@ -108929,6 +108939,8 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: "6b4dc1bd66c5189979d8",
+  wsHost: window.location.hostname,
+  wsPort: 8000,
   cluster: "ap1",
   encrypted: true
 });

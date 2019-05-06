@@ -1,6 +1,6 @@
 <template>
   <v-toolbar color="indigo lighten-1" class="white--text">
-    <v-toolbar-title>Ahkeno's Question Forum</v-toolbar-title>
+    <v-toolbar-title>Hello {{userName}}</v-toolbar-title>
     <v-spacer></v-spacer>
     <notification  ></notification>
     <v-toolbar-side-icon class="hidden-md-and-up"></v-toolbar-side-icon>
@@ -38,6 +38,12 @@ export default {
     EventBus.$on('logout',()=>{
       User.logout()
     });
+    
+  },
+  computed:{
+    userName(){
+      return User.name();
+    }
   }
 }
 </script>

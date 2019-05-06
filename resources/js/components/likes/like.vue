@@ -17,24 +17,20 @@ export default {
         likeIt(){
             
             if(User.isLoggedIn()){
-                this.like ? this.decr() : this.incr()
-	            this.like = !this.like
+                this.isliked ? this.decr() : this.incr()
+	            this.isliked = !this.isliked
             }
         },
         decr(){
             axios.delete(`/api/like/${this.id}`)
 	            .then(res => {
-                    
                     this.count --
-                    this.isliked = false
                 } )
         },
         incr(){
             axios.post(`/api/like/${this.id}`)
 	            .then(res => {
-                     
-                    this.count ++
-                    this.isliked = true})
+                    this.count ++})
         }
         
     },
@@ -46,6 +42,13 @@ export default {
     created(){
         this.like = this.isliked;
         this.likeCount = this.count;
+
+        Echo.channel('likeChannel')
+            .listen('LikeEvent', (e) => {
+                if(this.id == e.id){
+                    e.type== 1? this.count ++ : this.count --
+                }
+            });
         
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class LikeEvent
+class LikeEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -19,9 +19,13 @@ class LikeEvent
      *
      * @return void
      */
-    public function __construct()
+    public $id;
+    public $type;
+
+    public function __construct($id, $type)
     {
-        //
+        $this->id = $id;
+        $this->type = $type;
     }
 
     /**
@@ -31,6 +35,6 @@ class LikeEvent
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new Channel('likeChannel');
     }
 }
