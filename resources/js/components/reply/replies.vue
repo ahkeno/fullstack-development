@@ -68,7 +68,7 @@ export default {
     created(){
         this.reply = this.content;
         this.getLike();
-        
+        this.listen();
     },
     methods:{
         editing(){
@@ -91,8 +91,21 @@ export default {
             alert("I on cancle");
             this.showEdit = false
         },
-        listener(){
-        
+        listen(){
+            alert("one");
+             Echo.private('App.Usersss.' + User.id())
+                .notification((notification) => {
+                    alert("two");
+                    this.content.unshift(notification.reply)
+                });
+            Echo.channel('deleteReplyChannel')
+            .listen('DeleteReplyEvent',(e) => {
+                for(let index = 0 ;index < this.content.length;index++){
+                    if(this.content[index].id == e.id){
+                        this.content.splice(index,1)
+                    }
+                }
+            })
         },
         getLike(){
             

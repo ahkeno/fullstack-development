@@ -2101,6 +2101,7 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     var _this = this;
 
+    this.listen();
     this.getAllReply();
     EventBus.$on('deleteReply', function (value) {
       axios["delete"]("/api".concat(_this.$route.path, "/reply/").concat(value.id)).then(function (res) {
@@ -2121,6 +2122,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    listen: function listen() {},
     getAllReply: function getAllReply() {
       var _this2 = this;
 
@@ -2421,35 +2423,43 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   created: function created() {
+    var _this = this;
+
     if (User.isLoggedIn()) {
       this.getNotifications();
     }
+
+    Echo["private"]('App.User.' + User.id()).notification(function (notification) {
+      _this.unread.unshift(notification);
+
+      _this.unreadCount++;
+    });
   },
   computed: {},
   methods: {
     getNotifications: function getNotifications() {
-      var _this = this;
+      var _this2 = this;
 
       axios.post('/api/notification').then(function (res) {
-        _this.read = res.data.read;
-        _this.unread = res.data.unread;
-        _this.unreadCount = res.data.unread.length;
+        _this2.read = res.data.read;
+        _this2.unread = res.data.unread;
+        _this2.unreadCount = res.data.unread.length;
       })["catch"](function (err) {
         return console.log("error");
       });
     },
     readIt: function readIt(notification) {
-      var _this2 = this;
+      var _this3 = this;
 
       debugger;
       axios.post("/api/markAsRead", {
         id: notification.id
       }).then(function (res) {
-        _this2.unread.splice(notification, 1);
+        _this3.unread.splice(notification, 1);
 
-        _this2.read.push(notification);
+        _this3.read.push(notification);
 
-        _this2.unreadCount--;
+        _this3.unreadCount--;
       });
     }
   }
@@ -2580,6 +2590,7 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.reply = this.content;
     this.getLike();
+    this.listen();
   },
   methods: {
     editing: function editing() {
@@ -2607,12 +2618,28 @@ __webpack_require__.r(__webpack_exports__);
       alert("I on cancle");
       this.showEdit = false;
     },
-    listener: function listener() {},
-    getLike: function getLike() {
+    listen: function listen() {
       var _this2 = this;
 
+      alert("one");
+      Echo["private"]('App.Usersss.' + User.id()).notification(function (notification) {
+        alert("two");
+
+        _this2.content.unshift(notification.reply);
+      });
+      Echo.channel('deleteReplyChannel').listen('DeleteReplyEvent', function (e) {
+        for (var index = 0; index < _this2.content.length; index++) {
+          if (_this2.content[index].id == e.id) {
+            _this2.content.splice(index, 1);
+          }
+        }
+      });
+    },
+    getLike: function getLike() {
+      var _this3 = this;
+
       axios.get("/api/question/".concat(this.$route.params.slug, "/reply/").concat(this.reply.id)).then(function (res) {
-        _this2.likedContent = res.data.data;
+        _this3.likedContent = res.data.data;
       });
     }
   }
@@ -108942,7 +108969,11 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   wsHost: window.location.hostname,
   wsPort: 8000,
   cluster: "ap1",
-  encrypted: true
+  auth: {
+    headers: {
+      Authorization: apitoken
+    }
+  }
 });
 
 /***/ }),

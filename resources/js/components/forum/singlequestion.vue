@@ -61,7 +61,7 @@ export default {
       }
   },
   created(){
-    
+        this.listen();
         this.getAllReply();
         EventBus.$on('deleteReply',(value)=>{
           axios.delete(`/api${this.$route.path}/reply/${value.id}`)
@@ -82,6 +82,9 @@ export default {
       
   },
   methods:{
+      listen(){
+          
+      },
       getAllReply(){
           axios.get(`/api/question/${this.$route.params.slug}`)
           .then(res => {
@@ -114,6 +117,7 @@ export default {
       cancel(){
           EventBus.$emit('stopEditing');
       },
+      
       
   },
   components: {Replies,CreateReply},

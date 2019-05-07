@@ -54,5 +54,10 @@ window.Echo = new Echo({
     wsHost: window.location.hostname,
     wsPort: 8000,
     cluster: "ap1",
-    encrypted: true
+    
+    auth:{
+        headers:{
+            Authorization : apitoken
+        }
+    }
 });
